@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const knex = require('../knexfile');
+const knex = require('../../../db');
 
 // Pobierz wszystkie zamówienia
 router.get('/', async (req, res) => {
@@ -65,5 +65,21 @@ router.patch('/:id', async (req, res) => {
         res.status(400).send(error);
     }
 });
+
+// Pobierz zamówienia z określonym stanem
+router.get('/status/:statusId', async (req, res) => {
+    try {
+        const statusId = req.params.statusId;
+        const orders = await knex('orders').where('status_id', statusId);
+        if (orders.length > 0) {
+            res.json(orders);
+        } else {
+            res.status(404).send('No orders found for the given status');
+        }
+    } catch (error) {
+        res.status(500).send(error);
+    }
+});
+
 
 module.exports = router;

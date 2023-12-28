@@ -1,4 +1,4 @@
-const knex = require('../knexfile');
+const knex = require('../../../db');
 const bookshelf = require('bookshelf')(knex);
 
 const Product = bookshelf.model('Product', {

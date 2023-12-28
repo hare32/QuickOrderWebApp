@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const knex = require('../knexfile');
+const knex = require('../../../db');
 
 // Pobierz wszystkie kategorie
 router.get('/', async (req, res) => {

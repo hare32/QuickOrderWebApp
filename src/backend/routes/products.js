@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const knex = require('../knexfile');
+const knex = require('../../../db');
 
 // Pobierz wszystkie produkty
 router.get('/', async (req, res) => {
@@ -8,7 +8,8 @@ router.get('/', async (req, res) => {
         const products = await knex.select('*').from('products');
         res.json(products);
     } catch (error) {
-        res.status(500).send(error);
+        console.error(error);
+        res.status(500).send('Internal Server Error');
     }
 });
 
