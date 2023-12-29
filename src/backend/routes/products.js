@@ -52,11 +52,11 @@ router.post('/', [
 
 // Aktualizuj produkt
 router.put('/:id', [
-    body('name').notEmpty().withMessage('Name cannot be empty'),
-    body('description').notEmpty().withMessage('Description cannot be empty'),
-    body('unit_price').isFloat({ gt: 0 }).withMessage('Unit price must be greater than 0'),
-    body('unit_weight').isFloat({ gt: 0 }).withMessage('Unit weight must be greater than 0'),
-    body('category_id').isInt({ gt: 0 }).withMessage('Category ID must be a positive integer')
+    body('name').optional().notEmpty().withMessage('Name cannot be empty'),
+    body('description').optional().notEmpty().withMessage('Description cannot be empty'),
+    body('unit_price').optional().isFloat({ gt: 0 }).withMessage('Unit price must be greater than 0'),
+    body('unit_weight').optional().isFloat({ gt: 0 }).withMessage('Unit weight must be greater than 0'),
+    body('category_id').optional().isInt({ gt: 0 }).withMessage('Category ID must be a positive integer')
 ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -77,6 +77,7 @@ router.put('/:id', [
         res.status(500).send(error);
     }
 });
+
 
 
 module.exports = router;
