@@ -8,6 +8,7 @@ const Cart = ({ cartItems, onUpdateQuantity, onRemove }) => {
             <thead>
             <tr>
                 <th>Nazwa produktu</th>
+                <th>Cena jednostkowa</th>
                 <th>Ilość</th>
                 <th>Cena całkowita</th>
                 <th>Usuń</th>
