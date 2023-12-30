@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import Cart from '../components/Cart';
 import OrderForm from '../components/OrderForm';
+import { useLocation, useHistory } from 'react-router-dom';
 import { Modal, Button } from 'react-bootstrap';
-import { useHistory } from 'react-router-dom';
 
 const Checkout = () => {
+    const location = useLocation();
     const history = useHistory();
-    const initialCartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+    const initialCartItems = JSON.parse(localStorage.getItem('cartItems')) || location.state?.cartItems || [];
     const [cartItems, setCartItems] = useState(initialCartItems);
-    const [showOrderConfirmationModal, setShowOrderConfirmationModal] = useState(false);
+    const [showModal, setShowModal] = useState(false);
 
     useEffect(() => {
         localStorage.setItem('cartItems', JSON.stringify(cartItems));
@@ -28,22 +29,41 @@ const Checkout = () => {
         const updatedItems = cartItems.filter(cartItem => cartItem.id !== item.id);
         setCartItems(updatedItems);
     };
+    const handleSubmitOrder = async (formData) => {
+        const currentDate = new Date().toISOString().split('T')[0];
+        const orderData = {
+            user_name: formData.userName,
+            email: formData.email,
+            phone: formData.phone,
+            status_id: 1,
+            confirmation_date: currentDate,
+            products: cartItems.map(item => ({
+                product_id: item.id,
+                quantity: item.quantity
+            }))
+        };
 
-    const handleSubmitOrder = (formData) => {
-        // Tutaj implementacja wysyłania zamówienia
-        console.log('Order submitted:', formData, cartItems);
+        try {
+            const response = await fetch('http://localhost:3000/orders', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(orderData),
+            });
+            if (!response.ok) {
+                throw new Error('Problem z zatwierdzeniem zamówienia.');
+            }
 
-        // Pokaż modal z potwierdzeniem
-        setShowOrderConfirmationModal(true);
-
-        // Resetuj koszyk
-        setCartItems([]);
-        localStorage.removeItem('cartItems');
+            setShowModal(true);
+            setCartItems([]);
+        } catch (error) {
+            console.error('Błąd przy składaniu zamówienia:', error);
+        }
     };
-
-    const handleCloseConfirmationModal = () => {
-        setShowOrderConfirmationModal(false);
-        history.push('/'); // Przekierowanie na stronę główną
+    const handleCloseModal = () => {
+        setShowModal(false);
+        history.push('/'); // Przekierowanie do strony głównej
     };
 
     const totalCost = cartItems.reduce((total, item) => total + item.quantity * parseFloat(item.unit_price), 0);
@@ -57,21 +77,20 @@ const Checkout = () => {
             </div>
             <h2>Formularz zamówienia</h2>
             <OrderForm onSubmitOrder={handleSubmitOrder} />
-            <Modal show={showOrderConfirmationModal} onHide={handleCloseConfirmationModal}>
+            <Modal show={showModal} onHide={handleCloseModal}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Potwierdzenie zamówienia</Modal.Title>
+                    <Modal.Title>Zamówienie zatwierdzone</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    Twoje zamówienie zostało zatwierdzone!
+                    <p>Twoje zamówienie zostało zatwierdzone i przesłane do realizacji!</p>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="primary" onClick={handleCloseConfirmationModal}>
-                        Ok
+                    <Button variant="secondary" onClick={handleCloseModal}>
+                        Zamknij
                     </Button>
                 </Modal.Footer>
             </Modal>
         </div>
     );
 };
-
 export default Checkout;
