@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 
 const Home = () => {
     const [products, setProducts] = useState([]);
-    const [cartItems, setCartItems] = useState([]);
+    const [cartItems, setCartItems] = useState(JSON.parse(localStorage.getItem('cartItems')) || []);
     const [showModal, setShowModal] = useState(false);
     const [lastAddedItem, setLastAddedItem] = useState(null);
 
@@ -16,7 +16,7 @@ const Home = () => {
     }, []);
 
     useEffect(() => {
-        localStorage.setItem('cart', JSON.stringify(cartItems));
+        localStorage.setItem('cartItems', JSON.stringify(cartItems));
     }, [cartItems]);
 
     const handleAddToCart = (product) => {
@@ -26,8 +26,9 @@ const Home = () => {
                 item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
             ));
         } else {
-            setCartItems([...cartItems, { ...product, quantity: 1 }]);
-            setLastAddedItem(product);
+            const newCartItem = { ...product, quantity: 1 };
+            setCartItems([...cartItems, newCartItem]);
+            setLastAddedItem(newCartItem);
         }
         setShowModal(true);
     };

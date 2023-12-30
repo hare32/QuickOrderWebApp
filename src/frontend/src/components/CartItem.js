@@ -4,13 +4,18 @@ import { Button } from 'react-bootstrap';
 const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
     const unitPrice = parseFloat(item.unit_price); // Konwersja na liczbę
 
+    // Styl dla przycisków i liczby
+    const quantityStyle = {
+        margin: '0 10px', // Dodaje marginesy po obu stronach liczby
+    };
+
     return (
         <tr>
             <td>{item.name}</td>
-            <td>{unitPrice.toFixed(2)}</td> {/* Używamy zmiennej unitPrice */}
+            <td>{unitPrice.toFixed(2)}</td> {}
             <td>
                 <Button onClick={() => onUpdateQuantity(item, -1)}>-</Button>
-                {item.quantity}
+                <span style={quantityStyle}>{item.quantity}</span> {}
                 <Button onClick={() => onUpdateQuantity(item, 1)}>+</Button>
             </td>
             <td>{(unitPrice * item.quantity).toFixed(2)}</td>
