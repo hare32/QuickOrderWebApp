@@ -12,10 +12,10 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
     return (
         <tr>
             <td>{item.name}</td>
-            <td>{unitPrice.toFixed(2)}</td> {}
+            <td>{unitPrice.toFixed(2)}</td>
             <td>
                 <Button onClick={() => onUpdateQuantity(item, -1)}>-</Button>
-                <span style={quantityStyle}>{item.quantity}</span> {}
+                <span style={quantityStyle}>{item.quantity}</span>
                 <Button onClick={() => onUpdateQuantity(item, 1)}>+</Button>
             </td>
             <td>{(unitPrice * item.quantity).toFixed(2)}</td>

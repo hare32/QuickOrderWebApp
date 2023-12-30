@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import Cart from '../components/Cart';
 import OrderForm from '../components/OrderForm';
-import { useLocation } from 'react-router-dom';
+import { Modal, Button } from 'react-bootstrap';
+import { useHistory } from 'react-router-dom';
 
 const Checkout = () => {
-    const location = useLocation();
-    const initialCartItems = JSON.parse(localStorage.getItem('cartItems')) || location.state?.cartItems || [];
+    const history = useHistory();
+    const initialCartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
     const [cartItems, setCartItems] = useState(initialCartItems);
+    const [showOrderConfirmationModal, setShowOrderConfirmationModal] = useState(false);
 
     useEffect(() => {
-        // Aktualizacja localStorage po każdej zmianie w koszyku
         localStorage.setItem('cartItems', JSON.stringify(cartItems));
     }, [cartItems]);
 
@@ -29,7 +30,20 @@ const Checkout = () => {
     };
 
     const handleSubmitOrder = (formData) => {
-        // Implementacja wysyłania zamówienia
+        // Tutaj implementacja wysyłania zamówienia
+        console.log('Order submitted:', formData, cartItems);
+
+        // Pokaż modal z potwierdzeniem
+        setShowOrderConfirmationModal(true);
+
+        // Resetuj koszyk
+        setCartItems([]);
+        localStorage.removeItem('cartItems');
+    };
+
+    const handleCloseConfirmationModal = () => {
+        setShowOrderConfirmationModal(false);
+        history.push('/'); // Przekierowanie na stronę główną
     };
 
     const totalCost = cartItems.reduce((total, item) => total + item.quantity * parseFloat(item.unit_price), 0);
@@ -43,6 +57,19 @@ const Checkout = () => {
             </div>
             <h2>Formularz zamówienia</h2>
             <OrderForm onSubmitOrder={handleSubmitOrder} />
+            <Modal show={showOrderConfirmationModal} onHide={handleCloseConfirmationModal}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Potwierdzenie zamówienia</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    Twoje zamówienie zostało zatwierdzone!
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="primary" onClick={handleCloseConfirmationModal}>
+                        Ok
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
 };
