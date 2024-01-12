@@ -4,6 +4,11 @@ const knex = require('../../../db');
 const { body, validationResult } = require('express-validator');
 const {isInt, isDate} = require("validator");
 
+const HTTP_STATUS_CREATED = 201;
+const HTTP_STATUS_BAD_REQUEST = 400;
+const HTTP_STATUS_NOT_FOUND = 404;
+const HTTP_STATUS_INTERNAL_SERVER_ERROR = 500;
+
 // Pobierz wszystkie zamówienia
 router.get('/', async (req, res) => {
     try {
@@ -40,7 +45,7 @@ router.get('/', async (req, res) => {
 
         res.json(Object.values(groupedOrders));
     } catch (error) {
-        res.status(500).send(error);
+        res.status(HTTP_STATUS_INTERNAL_SERVER_ERROR).send(error);
     }
 });
 
@@ -55,7 +60,7 @@ router.get('/:id', async (req, res) => {
             .where('orders.id', req.params.id);
 
         if (orderDetails.length === 0) {
-            return res.status(404).send('Order not found');
+            return res.status(HTTP_STATUS_NOT_FOUND).send('Order not found');
         }
 
         const order = {
@@ -69,7 +74,7 @@ router.get('/:id', async (req, res) => {
 
         res.json(order);
     } catch (error) {
-        res.status(500).send(error);
+        res.status(HTTP_STATUS_INTERNAL_SERVER_ERROR).send(error);
     }
 });
 
@@ -110,7 +115,7 @@ router.get('/user/:username', async (req, res) => {
 
         res.json(Object.values(groupedOrders));
     } catch (error) {
-        res.status(500).send(error);
+        res.status(HTTP_STATUS_INTERNAL_SERVER_ERROR).send(error);
     }
 });
 
@@ -128,7 +133,7 @@ router.post('/', [
 ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
+        return res.status(HTTP_STATUS_BAD_REQUEST).json({ errors: errors.array() });
     }
 
     try {
@@ -150,7 +155,7 @@ router.post('/', [
             // Sprawdź, czy wszystkie produkty istnieją w bazie danych
             const existingProducts = await trx('products').whereIn('id', productIds).select('id');
             if (existingProducts.length !== productIds.length) {
-                return res.status(400).send('One or more products do not exist');
+                return res.status(HTTP_STATUS_BAD_REQUEST).send('One or more products do not exist');
             }
 
             const orderItems = req.body.products.map(product => {
@@ -164,9 +169,9 @@ router.post('/', [
             await trx('order_items').insert(orderItems);
         });
 
-        res.status(201).send('Order created successfully');
+        res.status(HTTP_STATUS_CREATED).send('Order created successfully');
     } catch (error) {
-        res.status(500).send(error);
+        res.status(HTTP_STATUS_INTERNAL_SERVER_ERROR).send(error);
     }
 });
 
@@ -177,28 +182,27 @@ router.patch('/:id', async (req, res) => {
         const order = await knex('orders').where('id', req.params.id).first();
 
         if (!order) {
-            return res.status(404).send('Order not found');
+            return res.status(HTTP_STATUS_NOT_FOUND).send('Order not found');
         }
 
-        // Przykładowe ID statusów dla demonstracji
-        const STATUS_ANULOWANE = 3; // Przykładowe ID dla "Anulowane"
-        const STATUS_ZREALIZOWANE = 4; // Przykładowe ID dla "Zrealizowane"
+        const STATUS_ANULOWANE = 3;
+        const STATUS_ZREALIZOWANE = 4;
 
         // Zmiana statusu po anulowaniu zamówienia
         if (order.status_id === STATUS_ANULOWANE) {
-            return res.status(400).send('Cannot change status of a cancelled order');
+            return res.status(HTTP_STATUS_BAD_REQUEST).send('Cannot change status of a cancelled order');
         }
 
         // Zmiana statusu "wstecz" np. ze "Zrealizowane" na "Niezatwierdzone"
         if (order.status_id === STATUS_ZREALIZOWANE && status_id < STATUS_ZREALIZOWANE) {
-            return res.status(400).send('Cannot revert status from "Zrealizowane"');
+            return res.status(HTTP_STATUS_BAD_REQUEST).send('Cannot revert status from "Zrealizowane"');
         }
 
         // Aktualizacja statusu zamówienia
         await knex('orders').where('id', req.params.id).update({ status_id });
         res.send('Order status updated');
     } catch (error) {
-        res.status(400).send(error);
+        res.status(HTTP_STATUS_BAD_REQUEST).send(error);
     }
 });
 
@@ -214,7 +218,7 @@ router.get('/status/:statusId', async (req, res) => {
 
         // Sprawdzenie, czy zostały znalezione jakiekolwiek zamówienia
         if (statusOrders.length === 0) {
-            return res.status(404).send('No orders found for the given status');
+            return res.status(HTTP_STATUS_NOT_FOUND).send('No orders found for the given status');
         }
 
         const groupedOrders = statusOrders.reduce((acc, order) => {
@@ -243,7 +247,7 @@ router.get('/status/:statusId', async (req, res) => {
 
         res.json(Object.values(groupedOrders));
     } catch (error) {
-        res.status(500).send(error);
+        res.status(HTTP_STATUS_INTERNAL_SERVER_ERROR).send(error);
     }
 });
 

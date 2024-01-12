@@ -7,7 +7,6 @@ const OrderForm = ({ onSubmitOrder }) => {
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
-        // Clear error when the field is changed
         setFormErrors({ ...formErrors, [e.target.name]: null });
     };
 

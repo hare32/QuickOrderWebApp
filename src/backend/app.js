@@ -8,10 +8,10 @@ const orderRoutes = require('./routes/orders');
 const orderStatusRoutes = require('./routes/orderStatuses');
 
 app.use(cors({
-    origin: 'http://localhost:3001', // Dopuszczalne źródło, gdzie frontend jest hostowany
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Dopuszczalne metody HTTP
-    credentials: true, // Wsparcie dla credentiale, jak cookies, etc.
-    optionsSuccessStatus: 204 // Jaki status dla preflight request
+    origin: 'http://localhost:3001',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+    optionsSuccessStatus: 204
 }));
 
 app.use(express.json());

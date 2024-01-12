@@ -2,11 +2,10 @@ import React from 'react';
 import { Button } from 'react-bootstrap';
 
 const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
-    const unitPrice = parseFloat(item.unit_price); // Konwersja na liczbę
+    const unitPrice = parseFloat(item.unit_price);
 
-    // Styl dla przycisków i liczby
     const quantityStyle = {
-        margin: '0 10px', // Dodaje marginesy po obu stronach liczby
+        margin: '0 10px',
     };
 
     return (
