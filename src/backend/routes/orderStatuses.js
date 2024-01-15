@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const knex = require('../../../db');
+const {StatusCodes} = require("http-status-codes");
 
-const HTTP_STATUS_INTERNAL_SERVER_ERROR = 500;
 
 // Pobierz wszystkie stany zamówienia
 router.get('/', async (req, res) => {
@@ -10,7 +10,7 @@ router.get('/', async (req, res) => {
         const statuses = await knex.select('*').from('order_statuses');
         res.json(statuses);
     } catch (error) {
-        res.status(HTTP_STATUS_INTERNAL_SERVER_ERROR).send(error);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(error);
     }
 });
 

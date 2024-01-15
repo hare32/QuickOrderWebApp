@@ -79,10 +79,10 @@ const Checkout = () => {
             <OrderForm onSubmitOrder={handleSubmitOrder} />
             <Modal show={showModal} onHide={handleCloseModal}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Zamówienie zatwierdzone</Modal.Title>
+                    <Modal.Title>Zamówienie wysłane</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <p>Twoje zamówienie zostało zatwierdzone i przesłane do realizacji!</p>
+                    <p>Twoje zamówienie zostało wysłane!</p>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleCloseModal}>

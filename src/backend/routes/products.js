@@ -2,12 +2,7 @@ const express = require('express');
 const router = express.Router();
 const knex = require('../../../db');
 const { body, validationResult } = require('express-validator');
-
-const HTTP_STATUS_CREATED = 201;
-const HTTP_STATUS_BAD_REQUEST = 400;
-const HTTP_STATUS_NOT_FOUND = 404;
-const HTTP_STATUS_INTERNAL_SERVER_ERROR = 500;
-
+const {StatusCodes} = require("http-status-codes");
 
 
 // Pobierz wszystkie produkty
@@ -17,7 +12,7 @@ router.get('/', async (req, res) => {
         res.json(products);
     } catch (error) {
         console.error(error);
-        res.status(HTTP_STATUS_INTERNAL_SERVER_ERROR).send('Internal Server Error');
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).send('Internal Server Error');
     }
 });
 
@@ -28,10 +23,10 @@ router.get('/:id', async (req, res) => {
         if (product) {
             res.json(product);
         } else {
-            res.status(HTTP_STATUS_NOT_FOUND).send('Product not found');
+            res.status(StatusCodes.NOT_FOUND).send('Product not found');
         }
     } catch (error) {
-        res.status(HTTP_STATUS_INTERNAL_SERVER_ERROR).send(error);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(error);
     }
 });
 
@@ -45,14 +40,14 @@ router.post('/', [
 ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(HTTP_STATUS_BAD_REQUEST).json({ errors: errors.array() });
+        return res.status(StatusCodes.BAD_REQUEST).json({ errors: errors.array() });
     }
 
     try {
         const newProduct = await knex('products').insert(req.body);
-        res.status(HTTP_STATUS_CREATED).json(newProduct);
+        res.status(StatusCodes.CREATED).json(newProduct);
     } catch (error) {
-        res.status(HTTP_STATUS_INTERNAL_SERVER_ERROR).send(error);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(error);
     }
 });
 
@@ -66,21 +61,21 @@ router.put('/:id', [
 ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(HTTP_STATUS_BAD_REQUEST).json({ errors: errors.array() });
+        return res.status(StatusCodes.BAD_REQUEST).json({ errors: errors.array() });
     }
 
     try {
         // Sprawdzanie, czy produkt istnieje
         const existingProduct = await knex('products').where('id', req.params.id).first();
         if (!existingProduct) {
-            return res.status(HTTP_STATUS_NOT_FOUND).send('Product with the given ID not found');
+            return res.status(StatusCodes.NOT_FOUND).send('Product with the given ID not found');
         }
 
         // Aktualizacja produktu
         await knex('products').where('id', req.params.id).update(req.body);
         res.send('Product updated');
     } catch (error) {
-        res.status(HTTP_STATUS_INTERNAL_SERVER_ERROR).send(error);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(error);
     }
 });
 
