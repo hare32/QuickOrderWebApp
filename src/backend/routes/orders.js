@@ -4,6 +4,8 @@ const knex = require('../../../db');
 const { body, validationResult } = require('express-validator');
 const {isInt, isDate} = require("validator");
 const {StatusCodes} = require("http-status-codes");
+const jsonpatch = require('jsonpatch');
+
 
 // Pobierz wszystkie zamówienia
 router.get('/', async (req, res) => {
@@ -174,7 +176,7 @@ router.post('/', [
 // Zmień stan zamówienia
 router.patch('/:id', async (req, res) => {
     try {
-        const { status_id } = req.body;
+        // Pobieranie zamówienia
         const order = await knex('orders').where('id', req.params.id).first();
 
         if (!order) {
@@ -182,25 +184,27 @@ router.patch('/:id', async (req, res) => {
         }
 
         const STATUS_ANULOWANE = 3;
-        const STATUS_ZREALIZOWANE = 4;
 
-        // Zmiana statusu po anulowaniu zamówienia
+        // Stosowanie operacji JSON Patch
+        const updatedOrder = jsonpatch.apply_patch(order, req.body);
+
         if (order.status_id === STATUS_ANULOWANE) {
             return res.status(StatusCodes.BAD_REQUEST).send('Cannot change status of a cancelled order');
         }
 
-        // Zmiana statusu "wstecz" np. ze "Zrealizowane" na "Niezatwierdzone"
-        if (order.status_id === STATUS_ZREALIZOWANE && status_id < STATUS_ZREALIZOWANE) {
-            return res.status(StatusCodes.BAD_REQUEST).send('Cannot revert status from "Zrealizowane"');
+        // Sprawdzenie, czy nowy status jest "wstecz"
+        if (updatedOrder.status_id < order.status_id) {
+            return res.status(StatusCodes.BAD_REQUEST).send('Cannot change status to a previous state');
         }
 
         // Aktualizacja statusu zamówienia
-        await knex('orders').where('id', req.params.id).update({ status_id });
+        await knex('orders').where('id', req.params.id).update({ status_id: updatedOrder.status_id });
         res.send('Order status updated');
     } catch (error) {
         res.status(StatusCodes.BAD_REQUEST).send(error);
     }
 });
+
 
 // Pobierz zamówienia z określonym stanem
 router.get('/status/:statusId', async (req, res) => {
