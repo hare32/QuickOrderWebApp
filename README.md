@@ -1,29 +1,41 @@
-# ajifinal
+# Project Description
 
-This template should help get you started developing with Vue 3 in Vite.
+This project is a web application that allows users to place orders. Users can browse available products, add them to a cart, and then proceed to place orders by providing their contact information. The project consists of a frontend built with React and a backend based on Node.js using Express.js. SQLite is used for data storage.
 
-## Recommended IDE Setup
+## Features
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+- Browsing the list of products
+- Filtering products by name and category
+- Adding products to the cart
+- Placing orders from the cart
+- Verifying order data before submission
+- Sending orders to the database
 
-## Customize configuration
+## Technologies
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+- **Frontend:** React, React Bootstrap, React Router
+- **Backend:** Node.js, Express.js
+- **Database:** SQLite
+- **Additional tools:** JSZip (for handling ZIP files)
 
-## Project Setup
+## Running the Project
 
-```sh
-npm install
-```
+### Backend:
 
-### Compile and Hot-Reload for Development
+1. Install dependencies: `npm install`
+2. Start the server: `npm start`
+   - The server will be available at: `http://localhost:3000/`
 
-```sh
-npm run dev
-```
+### Frontend:
 
-### Compile and Minify for Production
+1. Go to the frontend folder: `cd frontend`
+2. Install dependencies: `npm install`
+3. Start the application: `npm start`
+   - The application will be available at: `http://localhost:3001/`
 
-```sh
-npm run build
-```
+## Project Structure
+
+- `/backend` - contains Node.js server files and database configuration
+- `/frontend` - contains React.js files for the user interface
+- `/frontend/src/components` - React components used in the application
+- `/frontend/src/views` - React views corresponding to individual pages of the application
